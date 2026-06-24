@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "dev": "vite",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
@@ -12,6 +13,7 @@
     "@vitejs/plugin-react": "latest",
     "vite": "latest",
     "react": "latest",
+    "react-dom": "latest",
     "lucide-react": "latest"
   },
   "devDependencies": {

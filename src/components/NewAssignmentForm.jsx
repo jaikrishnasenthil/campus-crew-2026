@@ -13,16 +13,19 @@ function NewAssignmentForm({ onCreate }) {
   const [error, setError] = useState('')
 
   function updateField(field, value) {
-    setForm({ field: value })
+    setForm((current) => ({ ...current, [field]: value }))
+    if (error) setError('')
   }
 
   function handleSubmit(event) {
     event.preventDefault()
-    if (!form.title && !form.course && !form.dueDate) {
+    if (!form.title.trim() || !form.course.trim() || !form.dueDate) {
       setError('Please fill every required field.')
       return
     }
+
     onCreate(form)
+    setForm(initialForm)
     setError('Assignment created successfully')
   }
 

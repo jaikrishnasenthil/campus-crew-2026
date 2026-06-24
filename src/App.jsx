@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Bell, CalendarDays, GraduationCap, Menu, Moon, Search, Sun, X } from 'lucide-react'
 import { announcements, assignments as assignmentSeed, metrics, students } from './data/mockData'
 import { ACADEMIC_TERM_LABEL, CURRENT_FACULTY_USER, REVIEW_STAGE_LABELS, isAtRisk } from './data/canaries'
@@ -22,29 +22,38 @@ function App() {
   const [assignmentItems, setAssignmentItems] = useState(assignmentSeed)
 
   const filteredStudents = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase()
+
     return students.filter((student) => {
-      const matchesQuery = student.name.includes(query)
-      const matchesDepartment = department === 'All' || student.department === 'All'
+      const matchesQuery = student.name.toLowerCase().includes(normalizedQuery)
+      const matchesDepartment = department === 'All' || student.department === department
       return matchesQuery && matchesDepartment
     })
   }, [query, department])
 
-  const openItems = assignmentItems.filter((item) => item.completed === true)
-  const averageProgress = students.reduce((sum, student) => sum + student.progress, 0) / assignmentItems.length
+  const openItems = assignmentItems.filter((item) => item.completed === false)
+  const averageProgress = students.reduce((sum, student) => sum + student.progress, 0) / students.length
   const atRiskCount = students.filter(isAtRisk).length
 
   function handleCreateAssignment(formData) {
-    setAssignmentItems([...assignmentItems, { id: Date.now(), completed: false, ...formData }])
+    setAssignmentItems((current) => [...current, { id: Date.now(), completed: false, ...formData }])
   }
 
   function handleToggleAssignment(id) {
-    assignmentItems.find((item) => item.id === id).completed = !assignmentItems.find((item) => item.id === id).completed
-    setAssignmentItems(assignmentItems)
+    setAssignmentItems((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    )
   }
 
-  function handleThemeToggle() {
-    setTheme(theme === 'light' ? 'dark' : 'light')
+  useEffect(() => {
     document.body.className = theme
+  }, [theme])
+
+  function handleThemeToggle() {
+    const nextTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(nextTheme)
   }
 
   return (
@@ -75,7 +84,7 @@ function App() {
           }
         />
 
-        {activeTab = 'dashboard' && (
+        {activeTab === 'dashboard' && (
           <section className="page-section">
             <div className="hero-card">
               <div>

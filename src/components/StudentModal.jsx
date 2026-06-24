@@ -1,7 +1,19 @@
+import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { getStatusClass } from '../utils/format'
 
 function StudentModal({ student, onClose }) {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
+
   return (
     <div className="modal-overlay">
       <div className="student-modal" role="dialog" aria-modal="true" aria-labelledby="student-modal-title">
