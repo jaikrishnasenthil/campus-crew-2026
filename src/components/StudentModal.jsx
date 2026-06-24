@@ -10,12 +10,28 @@ function StudentModal({ student, onClose }) {
       }
     }
 
+    // Lock background scroll when modal is active
+    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [onClose])
 
+  // Prevent crashing if student object isn't loaded yet
+  if (!student) return null
+
+  // Closes modal safely if user clicks the overlay background
+  const handleOverlayClick = (event) => {
+    if (event.target.classList.contains('modal-overlay')) {
+      onClose()
+    }
+  }
+
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="student-modal" role="dialog" aria-modal="true" aria-labelledby="student-modal-title">
         <button className="modal-close" onClick={onClose} aria-label="Close student details">
           <X size={20} />
